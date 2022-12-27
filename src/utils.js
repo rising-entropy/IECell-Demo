@@ -1,5 +1,4 @@
 import sha256 from "sha256"
-const JWT_SECRET = "1489762686428241269211535257083137611647994491166203518518119805951418187673510467706374747799644670"
 
 export const checkOrCreateData = () => {
     if(localStorage.getItem('userList') === null){
@@ -41,6 +40,41 @@ export const loginUser = (body) => {
         status: 401,
         message: "Invalid Credentials",
     }
+}
+
+export const registerUser = (body) => {
+    // check if username exists
+    let userList = JSON.parse(localStorage.getItem('userList'));
+    for(let i=0; i<userList.length; i++){
+        if(userList[i]['username'] === body['username']){
+            return {
+                status: 401,
+                message: "Username already exists!"
+            }
+        }
+    }
+    body['password'] = sha256(body['password']);
+    body['role'] = 'user';
+    // add to the list
+    userList.push(body);
+    localStorage.setItem('userList', JSON.stringify(userList));
+    localStorage.setItem('loggedInUser', JSON.stringify(body));
+    return {
+        status: 201,
+        message: "Signed Up Successfully!",
+    }
+}
+
+export const logoutUser = () => {
+    localStorage.setItem('loggedInUser', "{}")
+}
+
+export const isLoggedIn = () => {
+    const val = localStorage.getItem("loggedInUser");
+    if(val === "{}"){
+        return false;
+    }
+    return true
 }
 
 /*

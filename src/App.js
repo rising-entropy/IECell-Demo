@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -31,6 +31,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import { useTheme } from '@emotion/react';
 import { checkOrCreateData } from './utils';
 import { ToastContainer } from 'react-toastify';
+import AppDrawer from './components/AppDrawer';
 
 const drawerWidth = 240;
 
@@ -96,86 +97,58 @@ function App() {
 
   checkOrCreateData();
 
+  const [loggedInUser, setLoggedInUser] = React.useState(localStorage.getItem('loggedInUser'))
+  const [userType, setUserType] = React.useState("")
+    
+    React.useEffect(()=>{
+        if(loggedInUser === "{}"){
+          setUserType("")
+        }else{
+          if(JSON.parse(localStorage.getItem('loggedInUser'))['role'] === 'admin'){
+            setUserType("admin")
+          }else{
+            setUserType("user")
+          }
+        }
+        setLoggedInUser(JSON.parse(loggedInUser));
+    }, []);
+
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            User Management System
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-      <Main open={open}>
-        <DrawerHeader />
-        <Router>
-          <Routes>
-            <Route exact path="/" element={<LandingPage/>} />
-            <Route exact path="/login" element={<Login/>} />
-            <Route exact path="/register" element={<SignUp/>} />
-            <Route exact path="/admin" element={<AdminDashboard/>} />
-            <Route exact path="/user" element={<UserDashboard/>} />
-            <Route exact path="/profile" element={<UserProfile/>} />
-            <Route exact path="/profile/:username" element={<ProfilePage/>} />
-          </Routes>
-        </Router>
-        <ToastContainer />
-      </Main>
-    </Box>
+    <Router>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar position="fixed" open={open}>
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={{ mr: 2, ...(open && { display: 'none' }) }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              User Management System
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <AppDrawer drawerWidth={drawerWidth} open={open} DrawerHeader={DrawerHeader} handleDrawerClose={handleDrawerClose} theme={theme}  />
+        <Main open={open}>
+          <DrawerHeader />
+            <Routes>
+              <Route exact path="/" element={<LandingPage/>} />
+              <Route exact path="/login" element={<Login/>} />
+              <Route exact path="/register" element={<SignUp/>} />
+              <Route exact path="/admin" element={<AdminDashboard/>} />
+              <Route exact path="/user" element={<UserDashboard/>} />
+              <Route exact path="/profile" element={<UserProfile/>} />
+              <Route exact path="/profile/:username" element={<ProfilePage/>} />
+            </Routes>
+          <ToastContainer />
+        </Main>
+      </Box>
+    </Router>
   );
 }
 

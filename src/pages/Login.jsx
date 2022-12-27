@@ -12,8 +12,6 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { loginUser } from '../utils';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { Alert } from '@mui/material';
 
 const theme = createTheme();
@@ -25,11 +23,33 @@ export default function Login() {
    const [error, setError] = useState("")
 
    const navigate = useNavigate();
-  const notify = (msg) => toast(msg);
+
+   const [loggedInUser, setLoggedInUser] = useState(localStorage.getItem('loggedInUser'))
+    useEffect(()=>{
+        if(loggedInUser !== "{}"){
+            navigate('/login');
+            const theUser = JSON.parse(loggedInUser);
+            setLoggedInUser(JSON.parse(loggedInUser))
+            if(theUser['role'] === 'admin'){
+                navigate('/admin')
+            }else{
+                navigate('/user')
+            }
+        }
+    }, []);
 
 
     const submitForm = e => {
       e.preventDefault();
+      setError("");
+      if(theUsername.length === 0){
+        setError("Username is Required");
+        return;
+      }
+      if(thePassword.length === 0){
+        setError("Password is Required");
+        return;
+      }
       const body = {
         username: theUsername,
         password: thePassword
