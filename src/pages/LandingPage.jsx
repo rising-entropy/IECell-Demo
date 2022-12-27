@@ -1,8 +1,10 @@
 import { Button } from '@mui/material'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { checkOrCreateData } from '../utils'
 
 export default function LandingPage() {
+
   return (
     <div style={{margin: '1rem auto', textAlign: 'center'}} >
         <h2>Landing Page</h2>

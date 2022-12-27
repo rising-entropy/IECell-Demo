@@ -29,6 +29,8 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import { useTheme } from '@emotion/react';
+import { checkOrCreateData } from './utils';
+import { ToastContainer } from 'react-toastify';
 
 const drawerWidth = 240;
 
@@ -91,6 +93,8 @@ function App() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  checkOrCreateData();
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -169,6 +173,7 @@ function App() {
             <Route exact path="/profile/:username" element={<ProfilePage/>} />
           </Routes>
         </Router>
+        <ToastContainer />
       </Main>
     </Box>
   );

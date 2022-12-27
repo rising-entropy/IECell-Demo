@@ -4,13 +4,17 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { loginUser } from '../utils';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Alert } from '@mui/material';
 
 const theme = createTheme();
 
@@ -18,11 +22,30 @@ export default function Login() {
 
     const [thePassword, setThePassword] = useState("")
    const [theUsername, setTheUsername] = useState("")
+   const [error, setError] = useState("")
+
+   const navigate = useNavigate();
+  const notify = (msg) => toast(msg);
+
 
     const submitForm = e => {
       e.preventDefault();
-      
+      const body = {
+        username: theUsername,
+        password: thePassword
+      }
+      const resp = loginUser(body)
+      if(resp['status'] === 401){
+        setError(resp['message'])
+      }else{
+        if(resp['role'] === 'admin'){
+            navigate("/admin");
+        }else{
+            navigate("/user");
+        }
+      }
   };
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -43,6 +66,8 @@ export default function Login() {
             Sign in
           </Typography>
           <Box component="form" onSubmit={submitForm} noValidate sx={{ mt: 1 }}>
+            {error.length > 0 ? <Alert severity="error" sx={{ m: 2 }}>{error}</Alert> : <></>}
+
             <TextField
               margin="normal"
               required
